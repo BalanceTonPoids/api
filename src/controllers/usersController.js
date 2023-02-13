@@ -71,6 +71,14 @@ class UsersController {
 			res.status(500).send(error);
 		}
 	}
+
+	async isAdmin(req, res, next) {
+		const user = await User.findById(req.user._id);
+		if (!user || user.role !== "admin") {
+		  return res.status(401).send({ error: "Unauthorized" });
+		}
+		next();
+	  }
 }
 
 module.exports = new UsersController();
