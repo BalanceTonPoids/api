@@ -33,11 +33,10 @@ The base url is http://localhost:3000/v1
 
 | Method | Route | Description |
 | ------ | ------ | ------ |
-| POST | /user | Create a new user |
-| GET | /user | Get all users |
-| GET | /user/:id | Get a user by id |
-| PATCH | /user/:id | Update a user by id |
-| DELETE | /user/:id | Delete a user by id |
+| POST | /users | Create a new user |
+| GET | /users/:id | Get a user by id |
+| PATCH | /users/:id | Update a user by id |
+| DELETE | /users/:id | Delete a user by id |
 
 #### Scale Data
 
@@ -52,6 +51,7 @@ The base url is http://localhost:3000/v1
 
 | Method | Route | Description |
 | ------ | ------ | ------ |
+| GET | /admin/users | Get all users |
 | GET | /admin/count | Get the number of users |
 
 
