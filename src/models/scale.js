@@ -5,7 +5,7 @@ const scaleSchema = new mongoose.Schema({
 		type: Number,
 		required: true,
 	},
-	IMC:{
+	IMC: {
 		type: Number,
 		required: true,
 	},
@@ -13,7 +13,7 @@ const scaleSchema = new mongoose.Schema({
 		type: Number,
 		required: true,
 	},
-	muscle:{
+	muscle: {
 		type: Number,
 		required: true,
 	},
