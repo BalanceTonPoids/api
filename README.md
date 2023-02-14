@@ -27,32 +27,51 @@ npm run format # format the code
 For the routes, you can see the src/routes.js file
 The base url is http://localhost:3000/v1
 > The v1 is the version of the api, that might change in the future !
-> Note: The routes are not protected, you can use Postman to test the routes
+> Note: The routes need to be logged in to access them, except the auth routes
+
+After login please set the header Authorization with the token you get from the login route
+```js
+// Exemple
+headers: {
+    Authorization: `Bearer ${token}`
+}
+```
 
 #### User
 
 | Method | Route | Description |
 | ------ | ------ | ------ |
-| POST | /users | Create a new user |
-| GET | /users/:id | Get a user by id |
-| PATCH | /users/:id | Update a user by id |
-| DELETE | /users/:id | Delete a user by id |
-
+| GET | /users | Get a user by id |
+| PATCH | /users | Update a user by id |
+> The Id is from the JWT token, need to be logged in to get the id.
 #### Scale Data
 
 | Method | Route | Description |
 | ------ | ------ | ------ |
-| POST | /data_scale/:iduser | Create a new scale data and link to the id user |
+| POST | /data_scale | Create a new scale data and link to the id user |
 | GET | /data_scale/:id | Get a scale data by id|
 | DELETE | /data_scale/:id | Delete a scale data by id|
-> Note: The iduser is the id of the user, you can get it from the user route
+> You need to be logged in to get the id of the user and be able to access the scale data
 
 #### Admin Routes
 
 | Method | Route | Description |
 | ------ | ------ | ------ |
-| GET | /admin/users | Get all users |
-| GET | /admin/count | Get the number of users |
+| GET | /admin/countUser | Get the number of users |
+| GET | /admin/getUser | Get all users |
+| GET | /admin/getUser/:id | Get a user by id |
+| POST | /admin/createUser | Create a new user |
+| DELETE | /admin/deleteUser/:id | Delete a user by id |
+
+> You need to be logged in as an admin to access these routes
+
+#### Auth
+
+| Method | Route | Description |
+| ------ | ------ | ------ |
+| POST | /auth/login | Login a user |
+| POST | /auth/register | Register a new user |
+
 
 
 ### Schema
@@ -68,6 +87,7 @@ Full Schema of the user
     "metric": "string",
     "age": "number",
     "height": "number",
+    "role": "string",
     "scale_data": [{
         "id": "string",
         "date": "timeStamp",
