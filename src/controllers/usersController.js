@@ -34,7 +34,7 @@ class UsersController {
 	}
 
 	async getById(req, res) {
-		const _id = req.params.id;
+		const _id = req.user._id;
 		try {
 			const user = await User.findById(_id).populate("scale_data");
 			if (!user) {
@@ -47,12 +47,13 @@ class UsersController {
 	}
 
 	async update(req, res) {
-		const _id = req.params.id;
+		const _id = req.user._id;
 		try {
-			const user = await User.findByIdAndDelete(_id);
+			const user = await User.findByIdAndUpdate(_id);
 			if (!user) {
 				return res.status(404).send();
 			}
+			user.set(req.body);
 			res.send(user);
 		} catch (error) {
 			res.status(500).send(error);
@@ -70,6 +71,14 @@ class UsersController {
 		} catch (error) {
 			res.status(500).send(error);
 		}
+	}
+
+	async isAdmin(req, res, next) {
+		const user = await User.findById(req.user._id);
+		if (!user || user.role !== "admin") {
+			return res.status(401).send({ error: "Unauthorized" });
+		}
+		next();
 	}
 }
 

@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const routes = require("./routes/v1");
-const ApiError = require("./utils/ApiError");
+const bodyParser = require("body-parser");
 
 const app = express();
 
 // parse json request body
 app.use(express.json());
+// User body parser
+app.use(bodyParser.json());
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,8 +20,14 @@ app.options("*", cors());
 app.use("/v1", routes);
 
 // send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-	next(new ApiError("404", "Not found"));
+app.use("*", (req, res) => {
+	res.status(404).json({
+		message: "Page not found",
+		error: {
+			statusCode: 404,
+			message: "You reached a route that is not defined on this server",
+		},
+	});
 });
 
 module.exports = app;

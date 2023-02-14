@@ -6,7 +6,8 @@ class ScaleController {
 		const scale = new Scale(req.body);
 		try {
 			await scale.save();
-			const user = await User.findById(req.params.iduser);
+			const _id = req.user._id;
+			const user = await User.findById(_id);
 			if (!user) {
 				return res.status(404).send("User not found");
 			}

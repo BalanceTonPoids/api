@@ -2,6 +2,7 @@ const express = require("express");
 const usersRoutes = require("./users");
 const adminRoutes = require("./admin");
 const dataScaleRoutes = require("./scale");
+const authRoutes = require("./auth");
 
 const router = express.Router();
 
@@ -17,6 +18,10 @@ const defaultRoutes = [
 	{
 		path: "/data_scale",
 		route: dataScaleRoutes,
+	},
+	{
+		path: "/auth",
+		route: authRoutes,
 	},
 ];
 
