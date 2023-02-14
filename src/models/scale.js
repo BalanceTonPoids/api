@@ -1,12 +1,26 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 
 const scaleSchema = new mongoose.Schema({
-	weight: Number,
-	IMC: Number,
-	fat: Number,
-	muscle: Number,
-	water: Number,
+	weight: {
+		type: Number,
+		required: true,
+	},
+	IMC:{
+		type: Number,
+		required: true,
+	},
+	fat: {
+		type: Number,
+		required: true,
+	},
+	muscle:{
+		type: Number,
+		required: true,
+	},
+	water: {
+		type: Number,
+		required: true,
+	},
 	date: Date,
 });
 

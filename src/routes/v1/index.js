@@ -22,7 +22,7 @@ const defaultRoutes = [
 	{
 		path: "/auth",
 		route: authRoutes,
-	}
+	},
 ];
 
 defaultRoutes.forEach((route) => {
