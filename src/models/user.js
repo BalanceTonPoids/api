@@ -94,7 +94,8 @@ userSchema.pre("save", async function (next) {
 		user.created_at = now;
 	}
 	if (user.isModified("password")) {
-		user.password = await bcrypt.hash(user.password, 8);
+		const salt = await bcrypt.genSalt(10);
+		user.password = await bcrypt.hash(user.password, salt);
 	}
 	next();
 });
