@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const Token = require("../models/token");
 
 class AuthController {
 	async register(req, res) {
@@ -22,15 +23,55 @@ class AuthController {
 		if (!(email, password)) return res.status(400).send("Email and password required");
 		try {
 			const user = await User.findOne({ email }).select("+password");
-			console.log("user ", user);
 			if (!user) return res.status(400).send("Email not found");
 			const isMatch = await user.isPasswordMatch(password);
 			if (!isMatch) return res.status(400).send("Invalid password");
 			const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
-			console.log("token ", token);
 			res.header("auth-token", token).send({ token });
 		} catch (error) {
 			res.status(500).send(error);
+		}
+	}
+
+	async forgotPassword(req, res) {
+		const { email } = req.body;
+		try {
+			const user = await User.findOne({ email });
+			if (!user) return res.status(400).send("Email not found");
+			const token = await Token.findOne({ userId: user._id });
+			if (token) await token.deleteOne();
+			const resetToken = uid();
+			const newToken = new Token({
+				userId: user._id,
+				token: resetToken,
+				createdAt: Date.now(),
+			});
+			await newToken.save();
+			// send email with token
+			console.info({token: newToken, id: user._id});
+			const link = `http://localhost:3000/v1/passwordReset?token=${resetToken}&id=${user._id}`;
+			console.info(link);
+			res.send("Password reset link sent to email");
+		} catch (error){
+			res.status(400).res(error);
+		}
+	}
+
+	async resetPassword(req, res) {
+		const { id, token, password } = req.body;
+		if(!(id, token, password)) return res.status(400).send("All fields are required");
+		try {
+			const user = await User.findOne({ _id: id });
+			if (!user) return res.status(400).send("User not found");
+			const exitToken = await Token.findOne({ userId: user._id });
+			if (!exitToken) return res.status(400).send("Invalid token");
+			const isMatch = await exitToken.isTokenMatch(token);
+			if (!isMatch) return res.status(400).send("Invalid token");
+			user.password = password;
+			await user.save();
+			res.send("Password reset successfully");
+		} catch (error) {
+			res.status(400).send(error);
 		}
 	}
 }
