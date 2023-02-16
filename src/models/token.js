@@ -17,6 +17,11 @@ const tokenSchema = new mongoose.Schema({
   },
 });
 
+/**
+ * 
+ * @param {string} token 
+ * @returns {Promise<boolean>}
+ */
 tokenSchema.methods.compareToken = async function (token) {
     return token === this.token;
 };
