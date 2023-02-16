@@ -71,6 +71,11 @@ headers: {
 | ------ | ------ | ------ |
 | POST | /auth/login | Login a user |
 | POST | /auth/register | Register a new user |
+| POST | /auth//forgotPassword | Send an email to reset the password |
+| POST | /auth/resetPassword | Reset the password |
+> For login and register, you need to send the email and the password in the body of the request
+> For forgot password, you need to send the email in the body of the request
+> For reset password, you need to send the token, id and the new password in the body of the request
 
 
 

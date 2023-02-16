@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		trim: true,
-		minlength: 8,
+		minlength: [8, "Password must be at least 8 characters"],
 		validate(value) {
 			if (!value.match(/\d/) && value.match(/[a-zA-Z]/)) {
 				throw new Error("Password must contain at least one letter and one number");
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 	},
 	name: {
 		type: String,
-		required: true,
+		required: false,
 		trim: true,
 	},
 	phone: {
@@ -45,13 +45,13 @@ const userSchema = new mongoose.Schema({
 	},
 	gender: {
 		type: String,
-		enum: ["M", "F", "O"],
+		enum: ["M", "F", "O", null],
 		default: null,
 	},
 	metric: {
 		type: String,
 		enum: ["kg", "lb"],
-		default: null,
+		default: "kg",
 	},
 	age: Number,
 	height: Number,
