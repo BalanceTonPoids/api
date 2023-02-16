@@ -46,22 +46,29 @@ class AuthController {
 			const resetToken = uid();
 			const newToken = new Token({
 				userId: user._id,
-				token: resetToken
+				token: resetToken,
 			});
 			await newToken.save();
 			// send email with token
-			console.info({token: newToken, id: user._id});
+			console.info({ token: newToken, id: user._id });
 			const link = `http://localhost:3000/v1/auth/resetPassword?token=${resetToken}&id=${user._id}`;
+			const html = `
+				<h1>Réinitialisé le mots de passe</h1>
+				<p>Veuillez cliquez sur le liens ci dessous pour réinitialisé votre mots de passe</p>
+				<a href="${link}">${link}</a>
+			`;
+
+			await sendEmail(email, "Réinitialisé le mots de passe", html);
 			console.info(link);
 			res.status(200).send("Password reset link sent to email");
-		} catch (error){
+		} catch (error) {
 			res.status(400).send(error);
 		}
 	}
 
 	async resetPassword(req, res) {
 		const { id, token, password } = req.body;
-		if(!(id, token, password)) return res.status(400).send("All fields are required");
+		if (!(id, token, password)) return res.status(400).send("All fields are required");
 		try {
 			const user = await User.findOne({ _id: id });
 			if (!user) return res.status(400).send("User not found");
