@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Token = require("../models/token");
+const uid = require("../utils/uid");
 
 class AuthController {
 	async register(req, res) {
@@ -35,25 +36,26 @@ class AuthController {
 
 	async forgotPassword(req, res) {
 		const { email } = req.body;
+		console.log(email);
 		try {
 			const user = await User.findOne({ email });
 			if (!user) return res.status(400).send("Email not found");
 			const token = await Token.findOne({ userId: user._id });
 			if (token) await token.deleteOne();
+			// generate token
 			const resetToken = uid();
 			const newToken = new Token({
 				userId: user._id,
-				token: resetToken,
-				createdAt: Date.now(),
+				token: resetToken
 			});
 			await newToken.save();
 			// send email with token
 			console.info({token: newToken, id: user._id});
-			const link = `http://localhost:3000/v1/passwordReset?token=${resetToken}&id=${user._id}`;
+			const link = `http://localhost:3000/v1/auth/resetPassword?token=${resetToken}&id=${user._id}`;
 			console.info(link);
-			res.send("Password reset link sent to email");
+			res.status(200).send("Password reset link sent to email");
 		} catch (error){
-			res.status(400).res(error);
+			res.status(400).send(error);
 		}
 	}
 
@@ -65,7 +67,7 @@ class AuthController {
 			if (!user) return res.status(400).send("User not found");
 			const exitToken = await Token.findOne({ userId: user._id });
 			if (!exitToken) return res.status(400).send("Invalid token");
-			const isMatch = await exitToken.isTokenMatch(token);
+			const isMatch = await exitToken.compareToken(token);
 			if (!isMatch) return res.status(400).send("Invalid token");
 			user.password = password;
 			await user.save();
