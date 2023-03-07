@@ -9,13 +9,13 @@ class ScaleController {
 			const _id = req.user._id;
 			const user = await User.findById(_id);
 			if (!user) {
-				return res.status(404).send("User not found");
+				return res.status(404).send({"error": "User not found"});
 			}
 			user.scale_data.push(scale);
 			await user.save();
 			res.status(201).send(scale);
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(400).send({"error": error});
 		}
 	}
 
@@ -24,11 +24,11 @@ class ScaleController {
 		try {
 			const scale = await Scale.findById(_id);
 			if (!scale) {
-				return res.status(404).send();
+				return res.status(404).send({"error": "Scale not found"});
 			}
 			res.send(scale);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
@@ -37,11 +37,11 @@ class ScaleController {
 		try {
 			const scale = await Scale.findByIdAndDelete(_id);
 			if (!scale) {
-				return res.status(404).send();
+				return res.status(404).send({"error": "Scale not found"});
 			}
 			res.send(scale);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 }

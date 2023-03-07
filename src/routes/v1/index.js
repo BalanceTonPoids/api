@@ -3,6 +3,9 @@ const usersRoutes = require("./users");
 const adminRoutes = require("./admin");
 const dataScaleRoutes = require("./scale");
 const authRoutes = require("./auth");
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 const router = express.Router();
 
@@ -28,5 +31,8 @@ const defaultRoutes = [
 defaultRoutes.forEach((route) => {
 	router.use(route.path, route.route);
 });
+
+router.use('/api-docs', swaggerUi.serve);
+router.get('/api-docs', swaggerUi.setup(swaggerDocument));
 
 module.exports = router;

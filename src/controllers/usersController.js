@@ -13,14 +13,14 @@ class UsersController {
 		// Check if the user email is already taken
 		const email = req.body.email;
 		if (await User.isEmailTaken(email)) {
-			throw new ApiError(400, "Email already taken");
+			res.status(400).send({"error": "Email already taken"});
 		}
 		const user = new User(req.body);
 		try {
 			await user.save();
 			res.status(201).send(user);
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(400).send({"error": error});
 		}
 	}
 
@@ -29,7 +29,7 @@ class UsersController {
 			const users = await User.find();
 			res.send(users);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
@@ -42,7 +42,7 @@ class UsersController {
 			}
 			res.send(user);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
@@ -51,12 +51,12 @@ class UsersController {
 		try {
 			const user = await User.findByIdAndUpdate(_id);
 			if (!user) {
-				return res.status(404).send();
+				return res.status(404).send({"error": "cannot find user"});
 			}
 			user.set(req.body);
 			res.send(user);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
@@ -65,18 +65,18 @@ class UsersController {
 		try {
 			const user = await User.findByIdAndDelete(_id);
 			if (!user) {
-				return res.status(404).send();
+				return res.status(404).send({"error": "cannot find user"});
 			}
 			res.send(user);
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
 	async isAdmin(req, res, next) {
 		const user = await User.findById(req.user._id);
 		if (!user || user.role !== "admin") {
-			return res.status(401).send({ error: "Unauthorized" });
+			return res.status(401).send({ "error": "Unauthorized" });
 		}
 		next();
 	}

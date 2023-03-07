@@ -1,0 +1,647 @@
+{
+    "info": {
+        "title": "Balance ton poids API",
+        "version": "1.0.0",
+        "description": "API for balance ton poids application"
+    },
+    "host": "localhost:3000",
+    "basePath": "/v1",
+    "openapi": "3.0.0",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "paths": {
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Return data for a user",
+                "tags": [
+                    "Users"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/definitions/User"
+                                    
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the user's information by id (Token)",
+                "tags": [
+                    "Users"
+                ],
+                "requestBody":{
+                    "description": "Information to update",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the user's information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/definitions/User"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Login",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "description": "The user to login",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Return a token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "description": "The user to create",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8   
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Return a token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "Email already exist"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/auth/forgotPassword": {
+            "post": {
+                "description": "Forgot password",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return a token"
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/auth/resetPassword": {
+            "post": {
+                "description": "Reset password",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return a token"
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/data_scale/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Get data scale by id",
+                "tags": [
+                    "Data scale"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return data scale",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/Scale"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "Data scale not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete data scale by id",
+                "tags": [
+                    "Data scale"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Void"
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "Data scale not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/data_scale": {
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create a data scale",
+                "tags": [
+                    "Data scale"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return data scale",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/Scale"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "Data scale not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/countUser": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Return the number of users",
+                "tags": [
+                    "Admin"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return the number of users",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "count": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/getUser": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Return all users",
+                "tags": [
+                    "Admin"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return all users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/getUser/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Return a user by id",
+                "tags": [
+                    "Admin"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return a user by id",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/createUser": {
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create a user",
+                "tags": [
+                    "Admin"
+                ],
+                "requestBody": {
+                    "description": "The user to create",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/User"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Return a user ",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/deleteUser/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete a user by id",
+                "tags": [
+                    "Admin"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return a user by id"
+                    },
+                    "403": {
+                        "description": "Forbidden access"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "description": "The email address of the user",
+                    "example": "john.doe@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "The password of the user",
+                    "example": "mypassword123"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the user",
+                    "example": "John Doe"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "The phone number of the user",
+                    "example": "123-456-7890"
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "admin"
+                    ],
+                    "description": "The role of the user",
+                    "example": "user"
+                },
+                "gender": {
+                    "type": "string",
+                    "enum": [
+                        "M",
+                        "F",
+                        "O",
+                        null
+                    ],
+                    "description": "The gender of the user",
+                    "example": "M"
+                },
+                "metric": {
+                    "type": "string",
+                    "enum": [
+                        "kg",
+                        "lb"
+                    ],
+                    "description": "The metric unit of the user",
+                    "example": "kg"
+                },
+                "age": {
+                    "type": "integer",
+                    "description": "The age of the user",
+                    "example": 30
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "The height of the user",
+                    "example": 175
+                },
+                "scale_data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Scale"
+                    },
+                    "description": "An array of Scale objects associated with the user"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The date and time when the user was created",
+                    "example": "2022-03-07T10:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The date and time when the user was last updated",
+                    "example": "2022-03-07T10:05:00Z"
+                }
+            }
+        },
+        "Scale": {
+            "type": "object",
+            "properties": {
+                "weight": {
+                    "type": "integer",
+                    "description": "The weight of the user",
+                    "example": 75
+                },
+                "fat": {
+                    "type": "integer",
+                    "description": "The fat percentage of the user",
+                    "example": 15
+                },
+                "muscle": {
+                    "type": "integer",
+                    "description": "The muscle percentage of the user",
+                    "example": 30
+                },
+                "IMC": {
+                    "type": "integer",
+                    "description": "The IMC of the user",
+                    "example": 25
+                },
+                "water": {
+                    "type": "integer",
+                    "description": "The water percentage of the user",
+                    "example": 50
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The date of the user",
+                    "example": "2022-03-07T10:00:00Z"
+                }
+            }
+        }
+    }
+}   
