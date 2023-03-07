@@ -7,30 +7,31 @@ class AuthController {
 	async register(req, res) {
 		const { email } = req.body;
 		try {
-			if (await User.isEmailTaken(email)) {
-				return res.status(400).send("Email already taken");
+			const isTaken = await User.isEmailTaken(email);
+			if (isTaken) {
+				return res.status(400).send({"error":"Email already taken"});
 			}
 			const user = new User(req.body);
 			await user.save();
 			const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
 			res.header("auth-token", token).send({ token });
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(400).send({"error": error});
 		}
 	}
 
 	async login(req, res) {
 		const { email, password } = req.body;
-		if (!(email, password)) return res.status(400).send("Email and password required");
+		if (!(email, password)) return res.status(400).send({"error": "Email and password required"});
 		try {
 			const user = await User.findOne({ email }).select("+password");
-			if (!user) return res.status(400).send("Email not found");
+			if (!user) return res.status(400).send({"error": "Email not found"});
 			const isMatch = await user.isPasswordMatch(password);
-			if (!isMatch) return res.status(400).send("Invalid password");
+			if (!isMatch) return res.status(400).send({"error": "Invalid password"});
 			const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
 			res.header("auth-token", token).send({ token });
 		} catch (error) {
-			res.status(500).send(error);
+			res.status(500).send({"error": error});
 		}
 	}
 
@@ -39,7 +40,7 @@ class AuthController {
 		console.log(email);
 		try {
 			const user = await User.findOne({ email });
-			if (!user) return res.status(400).send("Email not found");
+			if (!user) return res.status(400).send({"error": "Email not found"});
 			const token = await Token.findOne({ userId: user._id });
 			if (token) await token.deleteOne();
 			// generate token
@@ -60,27 +61,27 @@ class AuthController {
 
 			await sendEmail(email, "Réinitialisé le mots de passe", html);
 			console.info(link);
-			res.status(200).send("Password reset link sent to email");
+			res.status(200).send({"message": "Password reset link sent to email"});
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(400).send({"error": error});
 		}
 	}
 
 	async resetPassword(req, res) {
 		const { id, token, password } = req.body;
-		if (!(id, token, password)) return res.status(400).send("All fields are required");
+		if (!(id, token, password)) return res.status(400).send({"error": "All fields are required"});
 		try {
 			const user = await User.findOne({ _id: id });
-			if (!user) return res.status(400).send("User not found");
+			if (!user) return res.status(400).send({"error": "User not found"});
 			const exitToken = await Token.findOne({ userId: user._id });
-			if (!exitToken) return res.status(400).send("Invalid token");
+			if (!exitToken) return res.status(400).send({"error": "Invalid token"});
 			const isMatch = await exitToken.compareToken(token);
-			if (!isMatch) return res.status(400).send("Invalid token");
+			if (!isMatch) return res.status(400).send({"error": "Invalid token"});
 			user.password = password;
 			await user.save();
-			res.send("Password reset successfully");
+			res.send({"message": "Password reset successfully"});
 		} catch (error) {
-			res.status(400).send(error);
+			res.status(400).send({"error": error});
 		}
 	}
 }
