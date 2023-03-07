@@ -42,7 +42,7 @@ headers: {
 | Method | Route | Description |
 | ------ | ------ | ------ |
 | GET | /users | Get a user by id |
-| PATCH | /users | Update a user by id |
+| PUT | /users | Update a user by id |
 > The Id is from the JWT token, need to be logged in to get the id.
 #### Scale Data
 
