@@ -4,7 +4,7 @@ const verifyToken = (req, res, next) => {
 	// for other methods to get the token req.body.token || req.query.token || req.params.token ....
 	const token = req.headers["authorization"] ? req.headers["authorization"].split(" ")[1] : null;
 	if (!token) {
-		return res.status(403).send("A token is required for authentication");
+		return res.status(403).send({"error" :"A token is required for authentication"});
 	}
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
