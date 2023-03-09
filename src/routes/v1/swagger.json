@@ -5,7 +5,7 @@
         "description": "API for balance ton poids application"
     },
     "host": "localhost:3000",
-    "basePath": "/v1",
+    "servers": [{ "url": "/v1" }],
     "openapi": "3.0.0",
     "schemes": [
         "http"
