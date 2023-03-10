@@ -49,11 +49,14 @@ class UsersController {
 	async update(req, res) {
 		const _id = req.user._id;
 		try {
-			const user = await User.findByIdAndUpdate(_id);
+			const user = await User.findByIdAndUpdate(_id, req.body, { new: true, select: '-role'});
 			if (!user) {
 				return res.status(404).send({"error": "cannot find user"});
 			}
-			user.set(req.body);
+			if(req.body.role && user.role !== "admin") {
+				return res.status(401).send({"error": "Unauthorized"});
+			}
+			// user.set(req.body);
 			res.send(user);
 		} catch (error) {
 			res.status(500).send({"error": error});
