@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Token = require("../models/token");
 const uid = require("../utils/uid");
+const sendEmail = require("../utils/sendEmail");
 
 class AuthController {
 	async register(req, res) {
@@ -37,7 +38,6 @@ class AuthController {
 
 	async forgotPassword(req, res) {
 		const { email } = req.body;
-		console.log(email);
 		try {
 			const user = await User.findOne({ email });
 			if (!user) return res.status(400).send({"error": "Email not found"});
@@ -50,17 +50,41 @@ class AuthController {
 				token: resetToken,
 			});
 			await newToken.save();
+			const userClient = process.env.CLIENT_URL;
+			const port = process.env.PORT;
+			const version = process.env.VERSION;
 			// send email with token
-			console.info({ token: newToken, id: user._id });
-			const link = `http://localhost:3000/v1/auth/resetPassword?token=${resetToken}&id=${user._id}`;
+			const link = `${userClient}${port}/v${version}/auth/resetPassword?token=${resetToken}&id=${user._id}`;
 			const html = `
+			<html>
+			<head>
+			  <style>
+				/* Add some basic styles to the email */
+				body {
+				  font-family: Arial, sans-serif;
+				  color: #333;
+				  background-color: #f8f8f8;
+				}
+				h1 {
+				  color: #0080ff;
+				}
+				p {
+				  margin: 10px 0;
+				}
+				a{
+					color: #0080ff;
+					font-weight: bold;
+				}
+			  </style>
+			</head>
+			<body>
 				<h1>Réinitialisé le mots de passe</h1>
 				<p>Veuillez cliquez sur le liens ci dessous pour réinitialisé votre mots de passe</p>
-				<a href="${link}">${link}</a>
+				<a href="${link}">Cliquer ici </a>
+				</body>
+		  </html>
 			`;
-
 			await sendEmail(email, "Réinitialisé le mots de passe", html);
-			console.info(link);
 			res.status(200).send({"message": "Password reset link sent to email"});
 		} catch (error) {
 			res.status(400).send({"error": error});
@@ -68,8 +92,9 @@ class AuthController {
 	}
 
 	async resetPassword(req, res) {
-		const { id, token, password } = req.body;
-		if (!(id, token, password)) return res.status(400).send({"error": "All fields are required"});
+		const id = req.query.id;
+		const token = req.query.token;
+		if (!(id, token)) return res.status(400).send({"error": "All fields are required"});
 		try {
 			const user = await User.findOne({ _id: id });
 			if (!user) return res.status(400).send({"error": "User not found"});
@@ -77,11 +102,44 @@ class AuthController {
 			if (!exitToken) return res.status(400).send({"error": "Invalid token"});
 			const isMatch = await exitToken.compareToken(token);
 			if (!isMatch) return res.status(400).send({"error": "Invalid token"});
+			// TODO might change later
+			const password = 'qwerty1234';
 			user.password = password;
 			await user.save();
-			res.send({"message": "Password reset successfully"});
+
+			// send email with new password
+			const html = `
+			<html>
+			<head>
+			  <style>
+				/* Add some basic styles to the email */
+				body {
+				  font-family: Arial, sans-serif;
+				  color: #333;
+				  background-color: #f8f8f8;
+				}
+				h1 {
+				  color: #0080ff;
+				}
+				p {
+				  margin: 10px 0;
+				}
+			  </style>
+			</head>
+			<body>
+			  <h1>Nouveau mot de passe</h1>
+			  <p>Bonjour,</p>
+			  <p>Vous avez demandé à réinitialiser votre mot de passe. Votre nouveau mot de passe est :</p>
+			  <p><strong>${password}</strong></p>
+			  <p>Nous vous conseillons de changer ce mot de passe dès que possible en vous connectant à l'application et en modifiant votre profil.</p>
+			  <p>Cordialement,<br />L'équipe de Balance ton poids</p>
+			</body>
+		  </html>
+			`;
+			await sendEmail(user.email, "Mots de passe temporaire", html);
+			res.status(200).send({"message": "Password reset successfully"});
 		} catch (error) {
-			res.status(400).send({"error": error});
+			res.status(400).send({"error": error.message});
 		}
 	}
 }
