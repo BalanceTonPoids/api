@@ -218,7 +218,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return a token"
+                        "description": "Return an email to the user wih the link to reset the password"
                     },
                     "403": {
                         "description": "Forbidden access"
@@ -233,14 +233,14 @@
             }
         },
         "/auth/resetPassword": {
-            "post": {
+            "get": {
                 "description": "Reset password",
                 "tags": [
                     "Auth"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Return a token"
+                        "description": "Return an email to the user with the new password"
                     },
                     "403": {
                         "description": "Forbidden access"
